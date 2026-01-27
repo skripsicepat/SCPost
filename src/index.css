@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* SkripsiCepat Custom Theme - Warm Academic */
+    --cream-paper: 34 23% 97%;
+    --charcoal-ink: 30 29% 12%;
+    --gold-foil: 33 39% 64%;
+    --sage-green: 157 19% 56%;
+    
+    --background: var(--cream-paper);
+    --foreground: var(--charcoal-ink);
+
+    --card: var(--cream-paper);
+    --card-foreground: var(--charcoal-ink);
+
+    --popover: var(--cream-paper);
+    --popover-foreground: var(--charcoal-ink);
+
+    --primary: var(--charcoal-ink);
+    --primary-foreground: var(--cream-paper);
+
+    --secondary: var(--gold-foil);
+    --secondary-foreground: var(--charcoal-ink);
+
+    --muted: 33 12% 90%;
+    --muted-foreground: 30 15% 45%;
+
+    --accent: var(--sage-green);
+    --accent-foreground: var(--cream-paper);
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 15% 85%;
+    --input: 30 15% 88%;
+    --ring: var(--gold-foil);
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: var(--charcoal-ink);
+    --foreground: var(--cream-paper);
+    --card: 30 20% 15%;
+    --card-foreground: var(--cream-paper);
+    --popover: 30 20% 15%;
+    --popover-foreground: var(--cream-paper);
+    --primary: var(--cream-paper);
+    --primary-foreground: var(--charcoal-ink);
+    --secondary: var(--gold-foil);
+    --secondary-foreground: var(--charcoal-ink);
+    --muted: 30 15% 25%;
+    --muted-foreground: 33 12% 65%;
+    --accent: var(--sage-green);
+    --accent-foreground: var(--cream-paper);
+    --border: 30 15% 25%;
+    --input: 30 15% 25%;
+    --ring: var(--gold-foil);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Newsreader', serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+  }
+  button, input, select, textarea, label {
+    font-family: 'Manrope', sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Paper texture effect */
+  .paper-texture {
+    position: relative;
+  }
+  
+  .paper-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* Soft shadows for cards */
+  .card-shadow {
+    box-shadow: 0 4px 12px rgba(44, 36, 22, 0.08);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card-shadow:hover {
+    box-shadow: 0 8px 24px rgba(44, 36, 22, 0.12);
+  }
+  
+  /* Frosted glass effect for modal */
+  .frosted-glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
