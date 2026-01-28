@@ -63,7 +63,7 @@ export function LeadCaptureForm({
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-4 border border-white/20">
               <Bot className="w-4 h-4 text-cyan-400" />
               <span className="text-sm font-medium text-white/90">
-                AI Thesis Generator
+                Title Generator
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -74,7 +74,7 @@ export function LeadCaptureForm({
             </h1>
             <p className="text-lg text-white/60 max-w-xl mx-auto">
               Isi data di bawah ini, dan kami akan menganalisis tren penelitian
-              terbaru di jurusan Anda
+              terbaru di sesuai dengan jurusan dan peminatan Anda
             </p>
           </motion.div>
 

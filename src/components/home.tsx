@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { LandingPage } from './landing-page';
 import { LeadCaptureForm } from './lead-capture-form';
 import { TitleSelection } from './title-selection';
-import { PaywallModal } from './paywall-modal';
 import { ChapterWorkspace } from './chapter-workspace';
+import { AccountSetupModal } from './account-setup-modal';
+import { LoginModal } from './login-modal';
 
 import { AppState, LeadFormData, Chapter, ChapterContent } from '@/types/app';
 import { toast } from 'sonner';
@@ -383,59 +384,63 @@ const INITIAL_CHAPTER_STATE: ChapterContent = {
 };
 
 function Home() {
-  const [appState, setAppState] = useState<AppState>({
-    step: 'landing',
-    leadData: null,
-    titleIdeas: [],
-    selectedTitle: null,
-    paymentStatus: 'pending',
-    chapters: {
-      'bab-1': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-1' },
-      'bab-2': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-2' },
-      'bab-3': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-3' },
-      'bab-4': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-4' },
-      'bab-5': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-5' },
-      'daftar-pustaka': { ...INITIAL_CHAPTER_STATE, chapter: 'daftar-pustaka' },
-    },
-    currentChapter: 'bab-1',
-    isGenerating: false,
-  });
+  // Load initial state from sessionStorage to persist across re-renders
+  const loadInitialState = (): AppState => {
+    try {
+      const saved = sessionStorage.getItem('skripsi-app-state');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('Failed to load saved state:', error);
+    }
+    
+    return {
+      step: 'landing',
+      leadData: null,
+      titleIdeas: [],
+      selectedTitle: null,
+      paymentStatus: 'pending',
+      chapters: {
+        'bab-1': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-1' },
+        'bab-2': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-2' },
+        'bab-3': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-3' },
+        'bab-4': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-4' },
+        'bab-5': { ...INITIAL_CHAPTER_STATE, chapter: 'bab-5' },
+        'daftar-pustaka': { ...INITIAL_CHAPTER_STATE, chapter: 'daftar-pustaka' },
+      },
+      currentChapter: 'bab-1',
+      isGenerating: false,
+    };
+  };
+
+  const [appState, setAppState] = useState<AppState>(loadInitialState);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [thesisId, setThesisId] = useState<string | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [showAccountSetupModal, setShowAccountSetupModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [hasSetPassword, setHasSetPassword] = useState(false);
 
-  // Check for existing session and subscription
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('skripsi-app-state', JSON.stringify(appState));
+    } catch (error) {
+      console.error('Failed to save state:', error);
+    }
+  }, [appState]);
+
+  // Check for existing session (but stay on landing page)
   useEffect(() => {
     const checkExistingSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
         setUserId(session.user.id);
-        
-        // Check if user has active subscription
-        const subscription = await subscriptionService.checkSubscriptionStatus(session.user.id);
-        
-        if (subscription && subscription.status === 'active') {
-          // User already paid, check if they have a thesis
-          const { data: thesisData } = await supabase
-            .from('thesis_drafts')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-
-          if (thesisData) {
-            setThesisId(thesisData.id);
-            setAppState(prev => ({
-              ...prev,
-              paymentStatus: 'paid',
-              step: 'chapter-writing',
-              selectedTitle: thesisData.title,
-            }));
-          }
-        }
+        // User session exists but we stay on landing page
+        // They can click "Login" to proceed to their thesis
       }
     };
 
@@ -468,12 +473,17 @@ function Home() {
     setAppState((prev) => ({
       ...prev,
       selectedTitle: title,
-      step: 'payment',
     }));
   };
 
-  const handleProceedToPayment = async () => {
-    if (!appState.selectedTitle || !appState.leadData) {
+  const handleDirectPayment = async (title: string) => {
+    // Set the title first
+    setAppState((prev) => ({
+      ...prev,
+      selectedTitle: title,
+    }));
+
+    if (!appState.leadData) {
       toast.error('Data tidak lengkap');
       return;
     }
@@ -543,20 +553,29 @@ function Home() {
         );
       } catch (midtransError: any) {
         console.error('Midtrans error:', midtransError);
-        
+
+        const midtransErrorMessage =
+          midtransError instanceof Error
+            ? midtransError.message
+            : typeof midtransError === 'string'
+              ? midtransError
+              : String((midtransError as any)?.message ?? midtransError ?? '');
+
         // Check if it's a configuration error - offer demo mode
-        if (midtransError.message?.includes('Konfigurasi') || 
-            midtransError.message?.includes('MISSING_SERVER_KEY') ||
-            midtransError.message?.includes('non-2xx')) {
+        if (midtransErrorMessage.includes('Konfigurasi') ||
+            midtransErrorMessage.includes('MISSING_SERVER_KEY') ||
+            midtransErrorMessage.includes('non-2xx') ||
+            midtransErrorMessage.includes('Unauthorized') ||
+            midtransErrorMessage.includes('unauthorized')) {
           useDemoMode = true;
-          toast.warning('Mode Demo: Midtrans belum dikonfigurasi', {
-            description: 'Pembayaran akan disimulasikan untuk testing.',
-            duration: 5000,
+          toast.warning('Mode Demo: Midtrans belum dikonfigurasi dengan benar', {
+            description: 'Pastikan Client Key dan Server Key dari environment yang sama (sandbox/production). Pembayaran akan disimulasikan.',
+            duration: 7000,
           });
         } else {
           setIsProcessingPayment(false);
           toast.error('Gagal menghubungi payment gateway', {
-            description: midtransError.message || 'Silakan coba lagi nanti atau hubungi support.',
+            description: midtransErrorMessage || 'Silakan coba lagi nanti atau hubungi support.',
           });
           return;
         }
@@ -588,7 +607,7 @@ function Home() {
             const newThesisId = await thesisService.createThesis(
               currentUserId,
               subscription.id,
-              appState.selectedTitle!,
+              title,
               appState.leadData!.fakultas,
               appState.leadData!.jurusan,
               appState.leadData?.peminatan
@@ -598,11 +617,14 @@ function Home() {
 
             setAppState((prev) => ({
               ...prev,
+              selectedTitle: title,
               paymentStatus: 'paid',
               step: 'chapter-writing',
             }));
 
-            toast.success('🎉 Demo: Pembayaran berhasil! Mulai menulis skripsi Anda.');
+            // Show account setup modal after demo payment
+            setShowAccountSetupModal(true);
+            toast.success('🎉 Demo: Pembayaran berhasil!');
           } catch (error: any) {
             console.error('Error creating subscription:', error);
             toast.error('Terjadi kesalahan saat membuat subscription.', {
@@ -613,7 +635,7 @@ function Home() {
         return;
       }
 
-      // Use Midtrans Snap embed mode instead of popup to avoid iframe/state issues
+      // Hide processing state and open Midtrans popup directly
       setIsProcessingPayment(false);
 
       // Create a container for embedded payment
@@ -627,8 +649,8 @@ function Home() {
           left: 0;
           width: 100%;
           height: 100%;
-          z-index: 9999;
-          background: rgba(0,0,0,0.5);
+          z-index: 99999;
+          background: rgba(0,0,0,0.8);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -636,9 +658,9 @@ function Home() {
         document.body.appendChild(snapContainer);
       }
       snapContainer.innerHTML = `
-        <div style="background: white; border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow: auto; position: relative;">
+        <div style="background: white; border-radius: 12px; width: fit-content; max-width: 400px; max-height: 90vh; overflow: auto; position: relative;">
           <button id="snap-close-btn" style="position: absolute; top: 10px; right: 10px; background: #f0f0f0; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 18px; z-index: 10;">×</button>
-          <div id="snap-embed"></div>
+          <div id="snap-embed" style="min-height: 400px; width: 100%;"></div>
         </div>
       `;
       snapContainer.style.display = 'flex';
@@ -665,12 +687,36 @@ function Home() {
             delete (window as any).snap;
           }
 
+          const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
+          if (!clientKey) {
+            reject(new Error('VITE_MIDTRANS_CLIENT_KEY is not set'));
+            return;
+          }
+
           const script = document.createElement('script');
-          script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
-          script.setAttribute('data-client-key', import.meta.env.VITE_MIDTRANS_CLIENT_KEY || '');
+          // Use sandbox URL for sandbox client key (Mid-client-xxx)
+          // Use production URL for production client key (Mid-server-xxx format in prod)
+          const isSandbox = clientKey.startsWith('Mid-client-') || clientKey.includes('sandbox');
+          script.src = isSandbox 
+            ? 'https://app.sandbox.midtrans.com/snap/snap.js'
+            : 'https://app.midtrans.com/snap/snap.js';
+          script.async = true;
+          script.setAttribute('data-client-key', clientKey);
           script.onload = () => {
             // Wait for snap to initialize
-            setTimeout(() => resolve(), 300);
+            const start = Date.now();
+            const tick = () => {
+              if ((window as any).snap) {
+                resolve();
+                return;
+              }
+              if (Date.now() - start > 5000) {
+                reject(new Error('Midtrans Snap loaded but window.snap is still undefined'));
+                return;
+              }
+              setTimeout(tick, 50);
+            };
+            tick();
           };
           script.onerror = () => reject(new Error('Failed to load Midtrans script'));
           document.head.appendChild(script);
@@ -702,6 +748,10 @@ function Home() {
         onSuccess: async (result: any) => {
           console.log('Payment success:', result);
           
+          // Hide container immediately on success
+          const container = document.getElementById('snap-container');
+          if (container) container.style.display = 'none';
+          
           try {
             // Create subscription
             const subscription = await subscriptionService.createSubscription(
@@ -714,7 +764,7 @@ function Home() {
             const newThesisId = await thesisService.createThesis(
               currentUserId,
               subscription.id,
-              appState.selectedTitle!,
+              title,
               appState.leadData!.fakultas,
               appState.leadData!.jurusan,
               appState.leadData?.peminatan
@@ -724,18 +774,30 @@ function Home() {
 
             setAppState((prev) => ({
               ...prev,
+              selectedTitle: title,
               paymentStatus: 'paid',
               step: 'chapter-writing',
             }));
 
-            const container = document.getElementById('snap-container');
-            if (container) container.style.display = 'none';
-            toast.success('🎉 Pembayaran berhasil! Mulai menulis skripsi Anda.');
+            // Show account setup modal after successful payment
+            setShowAccountSetupModal(true);
+            toast.success('🎉 Pembayaran berhasil!');
           } catch (error: any) {
-            console.error('Error creating subscription:', error);
-            const container = document.getElementById('snap-container');
-            if (container) container.style.display = 'none';
-            toast.error('Pembayaran berhasil tetapi terjadi kesalahan. Hubungi support.');
+            console.error('Error creating subscription/thesis:', error);
+            
+            // Still transition to chapter-writing even if there's an error
+            // This ensures the user doesn't get stuck after successful payment
+            setAppState((prev) => ({
+              ...prev,
+              selectedTitle: title,
+              paymentStatus: 'paid',
+              step: 'chapter-writing',
+            }));
+            
+            toast.error('Pembayaran berhasil tetapi terjadi kesalahan menyimpan data.', {
+              description: `Error: ${error.message}. Silakan hubungi support dengan Transaction ID: ${result.transaction_id || orderId}`,
+              duration: 10000,
+            });
           }
         },
         onPending: (result: any) => {
@@ -771,6 +833,15 @@ function Home() {
         description: error.message || 'Silakan coba lagi.',
       });
     }
+  };
+
+  const handleProceedToPayment = async () => {
+    if (!appState.selectedTitle || !appState.leadData) {
+      toast.error('Data tidak lengkap');
+      return;
+    }
+
+    await handleDirectPayment(appState.selectedTitle);
   };
 
   const handleStartChapter = async (chapter: Chapter) => {
@@ -849,6 +920,23 @@ function Home() {
         },
         isGenerating: false,
       }));
+
+      // Save chapters data to thesis_drafts for persistence
+      if (thesisId) {
+        const updatedChapters = {
+          ...appState.chapters,
+          [chapter]: {
+            ...appState.chapters[chapter],
+            content,
+          },
+        };
+        try {
+          await thesisService.saveChaptersData(thesisId, updatedChapters);
+        } catch (saveError) {
+          console.error('Failed to save chapters data:', saveError);
+        }
+      }
+
       toast.success('Konten bab berhasil dihasilkan!');
     } catch (error: any) {
       toast.error('Terjadi kesalahan', {
@@ -888,6 +976,22 @@ function Home() {
       },
       currentChapter: nextChapter || chapter,
     }));
+
+    // Save chapters data to thesis_drafts for persistence
+    if (thesisId) {
+      const updatedChapters = {
+        ...appState.chapters,
+        [chapter]: {
+          ...appState.chapters[chapter],
+          isComplete: true,
+        },
+      };
+      try {
+        await thesisService.saveChaptersData(thesisId, updatedChapters);
+      } catch (saveError) {
+        console.error('Failed to save chapters data:', saveError);
+      }
+    }
 
     if (nextChapter) {
       toast.success(`Bab selesai! Lanjut ke ${nextChapter.toUpperCase()}`);
@@ -946,6 +1050,23 @@ function Home() {
         },
         isGenerating: false,
       }));
+
+      // Save chapters data to thesis_drafts for persistence
+      if (thesisId) {
+        const updatedChapters = {
+          ...appState.chapters,
+          [chapter]: {
+            ...appState.chapters[chapter],
+            content,
+            revisionsRemaining: appState.chapters[chapter].revisionsRemaining - 1,
+          },
+        };
+        try {
+          await thesisService.saveChaptersData(thesisId, updatedChapters);
+        } catch (saveError) {
+          console.error('Failed to save chapters data:', saveError);
+        }
+      }
       
       toast.success('Revisi berhasil! Konten telah diperbarui.');
     } catch (error: any) {
@@ -980,10 +1101,81 @@ function Home() {
     setAppState((prev) => ({ ...prev, step: 'lead-form' }));
   };
 
+  const handleOpenLogin = () => {
+    setShowLoginModal(true);
+  };
+
+  const handleLoginSuccess = async (loggedInUserId: string) => {
+    setUserId(loggedInUserId);
+    setShowLoginModal(false);
+    setHasSetPassword(true);
+
+    // Check if user has active subscription and thesis
+    const subscription = await subscriptionService.checkSubscriptionStatus(loggedInUserId);
+    
+    if (subscription && subscription.status === 'active') {
+      // Get thesis data
+      const { data: thesisData } = await supabase
+        .from('thesis_drafts')
+        .select('*')
+        .eq('user_id', loggedInUserId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (thesisData) {
+        setThesisId(thesisData.id);
+        
+        // Load chapter contents from thesis_drafts
+        const chaptersState = { ...appState.chapters };
+        if (thesisData.chapters_data) {
+          Object.keys(thesisData.chapters_data).forEach((key) => {
+            if (chaptersState[key as Chapter]) {
+              chaptersState[key as Chapter] = {
+                ...chaptersState[key as Chapter],
+                ...thesisData.chapters_data[key],
+              };
+            }
+          });
+        }
+
+        setAppState((prev) => ({
+          ...prev,
+          paymentStatus: 'paid',
+          step: 'chapter-writing',
+          selectedTitle: thesisData.title,
+          chapters: chaptersState,
+          leadData: {
+            email: '',
+            fakultas: thesisData.fakultas || '',
+            jurusan: thesisData.jurusan || '',
+            peminatan: thesisData.peminatan || '',
+          },
+        }));
+
+        toast.success('Selamat datang kembali!', {
+          description: 'Melanjutkan penulisan skripsi Anda.',
+        });
+      }
+    } else {
+      toast.warning('Langganan tidak aktif', {
+        description: 'Langganan Anda telah berakhir. Silakan lakukan pembayaran baru.',
+      });
+    }
+  };
+
+  const handleAccountSetupSuccess = () => {
+    setShowAccountSetupModal(false);
+    setHasSetPassword(true);
+    toast.success('Sekarang Anda dapat login kapan saja!', {
+      description: 'Gunakan email dan password untuk mengakses skripsi Anda.',
+    });
+  };
+
   return (
     <>
       {appState.step === 'landing' && (
-        <LandingPage onGetStarted={handleGetStarted} />
+        <LandingPage onGetStarted={handleGetStarted} onLogin={handleOpenLogin} />
       )}
 
       {appState.step === 'lead-form' && (
@@ -998,15 +1190,8 @@ function Home() {
         <TitleSelection
           titleIdeas={appState.titleIdeas}
           onSelectTitle={handleTitleSelect}
-        />
-      )}
-
-      {appState.step === 'payment' && appState.selectedTitle && (
-        <PaywallModal
-          isOpen={true}
-          onProceedToPayment={handleProceedToPayment}
-          selectedTitle={appState.selectedTitle}
-          isProcessing={isProcessingPayment}
+          onProceedToPayment={handleDirectPayment}
+          isProcessingPayment={isProcessingPayment}
         />
       )}
 
@@ -1022,6 +1207,21 @@ function Home() {
           onDownload={handleDownload}
         />
       )}
+
+      {/* Account Setup Modal - shown after payment */}
+      <AccountSetupModal
+        isOpen={showAccountSetupModal}
+        onClose={() => setShowAccountSetupModal(false)}
+        email={appState.leadData?.email || ''}
+        onSuccess={handleAccountSetupSuccess}
+      />
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={handleLoginSuccess}
+      />
     </>
   );
 }

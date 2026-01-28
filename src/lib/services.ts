@@ -290,7 +290,7 @@ export const midtransService: MidtransService = {
       'supabase-functions-midtrans-proxy',
     ];
 
-    let lastError: Error | null = null;
+    let lastError: unknown = null;
     
     for (const functionName of functionNames) {
       try {
@@ -304,7 +304,7 @@ export const midtransService: MidtransService = {
 
         if (error) {
           console.error(`Error with ${functionName}:`, error);
-          lastError = new Error(error.message || 'Gagal menghubungi payment gateway');
+          lastError = error;
           continue;
         }
 
@@ -335,7 +335,8 @@ export const midtransService: MidtransService = {
     }
 
     // If all attempts failed
-    throw lastError || new Error('Gagal menghubungi payment gateway');
+    if (lastError instanceof Error) throw lastError;
+    throw new Error(typeof lastError === 'string' ? lastError : 'Gagal menghubungi payment gateway');
   },
 };
 
@@ -345,6 +346,7 @@ export interface ThesisService {
   createChapter(thesisId: string, chapterType: Chapter): Promise<string>;
   updateChapterContent(chapterId: string, content: string): Promise<void>;
   completeChapter(chapterId: string): Promise<void>;
+  saveChaptersData(thesisId: string, chaptersData: Record<string, any>): Promise<void>;
 }
 
 export const thesisService: ThesisService = {
@@ -436,6 +438,20 @@ export const thesisService: ThesisService = {
 
     if (error) {
       throw new Error('Failed to complete chapter: ' + error.message);
+    }
+  },
+
+  async saveChaptersData(thesisId: string, chaptersData: Record<string, any>): Promise<void> {
+    const { error } = await supabase
+      .from('thesis_drafts')
+      .update({ 
+        chapters_data: chaptersData,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', thesisId);
+
+    if (error) {
+      throw new Error('Failed to save chapters data: ' + error.message);
     }
   },
 };

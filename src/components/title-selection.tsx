@@ -10,11 +10,15 @@ import { Footer } from "./footer";
 interface TitleSelectionProps {
   titleIdeas: TitleIdea[];
   onSelectTitle: (title: string) => void;
+  onProceedToPayment: (title: string) => Promise<void>;
+  isProcessingPayment?: boolean;
 }
 
 export function TitleSelection({
   titleIdeas,
   onSelectTitle,
+  onProceedToPayment,
+  isProcessingPayment = false,
 }: TitleSelectionProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customTitle, setCustomTitle] = useState("");
@@ -33,9 +37,13 @@ export function TitleSelection({
     setSelectedId("custom");
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedId && customTitle) {
+      // First set the title, then proceed to payment directly
       onSelectTitle(customTitle);
+      setShowConfirmModal(false);
+      // Directly call payment handler with the selected title
+      await onProceedToPayment(customTitle);
     }
   };
 
@@ -72,8 +80,8 @@ export function TitleSelection({
                 </span>
               </h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
-                AI kami telah menganalisis tren penelitian terbaru dan
-                menghasilkan 10 ide judul yang relevan dengan bidang studi Anda
+                Kami telah menganalisis tren penelitian terbaru dan menghasilkan
+                10 ide judul yang relevan dengan bidang studi Anda
               </p>
             </motion.div>
           </div>
@@ -148,7 +156,7 @@ export function TitleSelection({
                     <Button
                       variant="outline"
                       onClick={handleCustomTitle}
-                      className="rounded-full border-white/20 text-white hover:bg-white/10"
+                      className="rounded-full border-[#D4A574] bg-[#D4A574]/20 text-[#D4A574] hover:bg-[#D4A574]/30 hover:text-white font-manrope font-semibold"
                     >
                       <Edit3 className="w-4 h-4 mr-2" />
                       Tulis Judul Sendiri
@@ -212,7 +220,7 @@ export function TitleSelection({
                   🔥 PROMO KUOTA TERBATAS
                 </p>
                 <p className="text-white/80 text-sm">
-                  Ingin AI kami menuliskan draf lengkap{" "}
+                  Ingin kami menuliskan draf lengkap{" "}
                   <span className="font-bold">Bab 1 sampai Bab 5</span>{" "}
                   berdasarkan judul ini?
                 </p>
@@ -228,10 +236,39 @@ export function TitleSelection({
 
               <Button
                 onClick={handleContinue}
-                className="w-full h-14 text-lg font-bold rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-2xl active:scale-[0.98] transition-all"
+                disabled={isProcessingPayment}
+                className="w-full h-14 text-lg font-bold rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-2xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Mulai Tulis Skripsi Saya Sekarang
+                {isProcessingPayment ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Membuka Pembayaran...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Bayar & Mulai Tulis Skripsi
+                  </>
+                )}
               </Button>
 
               <button

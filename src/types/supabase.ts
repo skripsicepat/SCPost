@@ -94,13 +94,6 @@ export type Database = {
             referencedRelation: "subscriptions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "email_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       revision_history: {
@@ -174,13 +167,6 @@ export type Database = {
             referencedRelation: "chapters"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "revision_purchases_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       subscriptions: {
@@ -220,18 +206,11 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       thesis_drafts: {
         Row: {
+          chapters_data: Json | null
           created_at: string | null
           fakultas: string | null
           id: string
@@ -243,6 +222,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          chapters_data?: Json | null
           created_at?: string | null
           fakultas?: string | null
           id?: string
@@ -254,6 +234,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          chapters_data?: Json | null
           created_at?: string | null
           fakultas?: string | null
           id?: string
@@ -270,13 +251,6 @@ export type Database = {
             columns: ["subscription_id"]
             isOneToOne: false
             referencedRelation: "subscriptions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "thesis_drafts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

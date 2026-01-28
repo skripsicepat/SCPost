@@ -95,12 +95,27 @@ Deno.serve(async (req) => {
 
     if (!midtransResponse.ok) {
       console.error('Midtrans error:', data);
+      
+      // Handle specific error cases
+      let errorMessage = 'Midtrans API error';
+      
+      if (data.error_messages) {
+        errorMessage = data.error_messages.join(', ');
+      } else if (data.status_message) {
+        errorMessage = data.status_message;
+      } else if (midtransResponse.status === 401) {
+        errorMessage = 'Unauthorized - Server Key tidak valid atau tidak cocok dengan environment (sandbox vs production)';
+      } else if (midtransResponse.status === 402) {
+        errorMessage = 'Unauthorized transaction - pastikan Client Key dan Server Key dari environment yang sama (keduanya sandbox atau keduanya production)';
+      }
+      
       return new Response(
-        JSON.stringify({ 
-          error: data.error_messages?.join(', ') || `Midtrans API error: ${midtransResponse.status}`,
-          details: data
+        JSON.stringify({
+          error: errorMessage,
+          details: data,
+          hint: 'Pastikan MIDTRANS_SERVER_KEY di Supabase secrets menggunakan key dari environment yang sama dengan VITE_MIDTRANS_CLIENT_KEY (sandbox atau production)'
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: midtransResponse.status }
       );
     }
 

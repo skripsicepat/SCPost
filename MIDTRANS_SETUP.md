@@ -66,7 +66,7 @@ script.src = 'https://app.midtrans.com/snap/snap.js';
 5. **User melakukan pembayaran**:
    - ✅ **Success**: Subscription dibuat → Thesis draft dibuat → Akses chapter workspace
    - ⏳ **Pending**: Toast notifikasi pending
-   - ❌ **Error**: Toast error → User bisa retry
+   - ❌ **Error**: Tampilkan toast error (user bisa retry)
    - 🚫 **Close**: Toast canceled → User bisa retry kapan saja
 
 ## 5. Testing di Sandbox Mode

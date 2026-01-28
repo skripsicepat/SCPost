@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Check, Download, Loader2, RefreshCw, ChevronRight } from 'lucide-react';
-import { Chapter, ChapterContent, Subscription } from '@/types/app';
-import { motion } from 'framer-motion';
-import { SubscriptionWarning } from './subscription-warning';
-import { RevisionQuotaModal } from './revision-quota-modal';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Check,
+  Download,
+  Loader2,
+  RefreshCw,
+  ChevronRight,
+} from "lucide-react";
+import { Chapter, ChapterContent, Subscription } from "@/types/app";
+import { motion } from "framer-motion";
+import { SubscriptionWarning } from "./subscription-warning";
+import { RevisionQuotaModal } from "./revision-quota-modal";
 
 interface ChapterWorkspaceProps {
   chapters: Record<Chapter, ChapterContent>;
@@ -22,21 +28,21 @@ interface ChapterWorkspaceProps {
 }
 
 const CHAPTER_ORDER: Chapter[] = [
-  'bab-1',
-  'bab-2',
-  'bab-3',
-  'bab-4',
-  'bab-5',
-  'daftar-pustaka',
+  "bab-1",
+  "bab-2",
+  "bab-3",
+  "bab-4",
+  "bab-5",
+  "daftar-pustaka",
 ];
 
 const CHAPTER_LABELS: Record<Chapter, string> = {
-  'bab-1': 'Bab 1: Pendahuluan',
-  'bab-2': 'Bab 2: Tinjauan Pustaka',
-  'bab-3': 'Bab 3: Metodologi Penelitian',
-  'bab-4': 'Bab 4: Hasil dan Pembahasan',
-  'bab-5': 'Bab 5: Kesimpulan dan Saran',
-  'daftar-pustaka': 'Daftar Pustaka',
+  "bab-1": "Bab 1: Pendahuluan",
+  "bab-2": "Bab 2: Tinjauan Pustaka",
+  "bab-3": "Bab 3: Metodologi Penelitian",
+  "bab-4": "Bab 4: Hasil dan Pembahasan",
+  "bab-5": "Bab 5: Kesimpulan dan Saran",
+  "daftar-pustaka": "Daftar Pustaka",
 };
 
 export function ChapterWorkspace({
@@ -52,29 +58,34 @@ export function ChapterWorkspace({
   onRenewSubscription,
   onPurchaseRevisions,
 }: ChapterWorkspaceProps) {
-  const [revisionFeedback, setRevisionFeedback] = useState<Record<Chapter, string>>({
-    'bab-1': '',
-    'bab-2': '',
-    'bab-3': '',
-    'bab-4': '',
-    'bab-5': '',
-    'daftar-pustaka': '',
+  const [revisionFeedback, setRevisionFeedback] = useState<
+    Record<Chapter, string>
+  >({
+    "bab-1": "",
+    "bab-2": "",
+    "bab-3": "",
+    "bab-4": "",
+    "bab-5": "",
+    "daftar-pustaka": "",
   });
   const [showRevisionQuotaModal, setShowRevisionQuotaModal] = useState(false);
-  const [selectedChapterForTopup, setSelectedChapterForTopup] = useState<Chapter | null>(null);
+  const [selectedChapterForTopup, setSelectedChapterForTopup] =
+    useState<Chapter | null>(null);
 
-  const completedCount = CHAPTER_ORDER.filter((ch) => chapters[ch].isComplete).length;
+  const completedCount = CHAPTER_ORDER.filter(
+    (ch) => chapters[ch].isComplete,
+  ).length;
   const progressPercent = (completedCount / CHAPTER_ORDER.length) * 100;
   const allChaptersComplete = completedCount === CHAPTER_ORDER.length;
 
-  const isSubscriptionExpired = subscription && (
-    subscription.status === 'expired' || 
-    new Date(subscription.expiryDate) < new Date()
-  );
+  const isSubscriptionExpired =
+    subscription &&
+    (subscription.status === "expired" ||
+      new Date(subscription.expiryDate) < new Date());
 
   const handleRevise = (chapter: Chapter) => {
     const chapterData = chapters[chapter];
-    
+
     if (chapterData.revisionsRemaining === 0) {
       setSelectedChapterForTopup(chapter);
       setShowRevisionQuotaModal(true);
@@ -83,7 +94,7 @@ export function ChapterWorkspace({
 
     if (revisionFeedback[chapter].trim()) {
       onReviseChapter(chapter, revisionFeedback[chapter]);
-      setRevisionFeedback({ ...revisionFeedback, [chapter]: '' });
+      setRevisionFeedback({ ...revisionFeedback, [chapter]: "" });
     }
   };
 
@@ -105,7 +116,7 @@ export function ChapterWorkspace({
             </h1>
             <div className="flex items-center gap-4">
               <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 />
@@ -120,7 +131,7 @@ export function ChapterWorkspace({
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {subscription && (
-          <SubscriptionWarning 
+          <SubscriptionWarning
             subscription={subscription}
             onRenew={onRenewSubscription}
           />
@@ -133,8 +144,9 @@ export function ChapterWorkspace({
               {CHAPTER_ORDER.map((chapter, index) => {
                 const chapterData = chapters[chapter];
                 const isActive = currentChapter === chapter;
-                const isUnlocked = index === 0 || chapters[CHAPTER_ORDER[index - 1]].isComplete;
-                
+                const isUnlocked =
+                  index === 0 || chapters[CHAPTER_ORDER[index - 1]].isComplete;
+
                 return (
                   <motion.button
                     key={chapter}
@@ -145,26 +157,30 @@ export function ChapterWorkspace({
                     disabled={!isUnlocked}
                     className={`
                       w-full text-left p-4 rounded-2xl transition-all border
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg shadow-purple-500/30 border-transparent' 
-                        : chapterData.isComplete
-                        ? 'bg-green-500/10 border-green-500/30'
-                        : isUnlocked
-                        ? 'bg-white/5 border-white/10 hover:border-white/30'
-                        : 'bg-white/5 border-white/5 opacity-40 cursor-not-allowed'
+                      ${
+                        isActive
+                          ? "bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg shadow-purple-500/30 border-transparent"
+                          : chapterData.isComplete
+                            ? "bg-green-500/10 border-green-500/30"
+                            : isUnlocked
+                              ? "bg-white/5 border-white/10 hover:border-white/30"
+                              : "bg-white/5 border-white/5 opacity-40 cursor-not-allowed"
                       }
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`
+                      <div
+                        className={`
                         w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-                        ${isActive 
-                          ? 'bg-white text-purple-600' 
-                          : chapterData.isComplete
-                          ? 'bg-green-500 text-white'
-                          : 'bg-white/10 text-white/60'
+                        ${
+                          isActive
+                            ? "bg-white text-purple-600"
+                            : chapterData.isComplete
+                              ? "bg-green-500 text-white"
+                              : "bg-white/10 text-white/60"
                         }
-                      `}>
+                      `}
+                      >
                         {chapterData.isComplete ? (
                           <Check className="w-4 h-4" />
                         ) : (
@@ -172,15 +188,23 @@ export function ChapterWorkspace({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-semibold truncate ${
-                          isActive ? 'text-white' : chapterData.isComplete ? 'text-green-400' : 'text-white/80'
-                        }`}>
+                        <div
+                          className={`text-sm font-semibold truncate ${
+                            isActive
+                              ? "text-white"
+                              : chapterData.isComplete
+                                ? "text-green-400"
+                                : "text-white/80"
+                          }`}
+                        >
                           {CHAPTER_LABELS[chapter]}
                         </div>
                         {chapterData.content && !chapterData.isComplete && (
-                          <div className={`text-xs ${
-                            isActive ? 'text-white/70' : 'text-white/40'
-                          }`}>
+                          <div
+                            className={`text-xs ${
+                              isActive ? "text-white/70" : "text-white/40"
+                            }`}
+                          >
                             Dalam proses
                           </div>
                         )}
@@ -202,7 +226,10 @@ export function ChapterWorkspace({
                 isSubscriptionExpired={isSubscriptionExpired || false}
                 revisionFeedback={revisionFeedback[currentChapter]}
                 onRevisionFeedbackChange={(value) =>
-                  setRevisionFeedback({ ...revisionFeedback, [currentChapter]: value })
+                  setRevisionFeedback({
+                    ...revisionFeedback,
+                    [currentChapter]: value,
+                  })
                 }
                 onStartGeneration={() => onStartChapter(currentChapter)}
                 onComplete={() => onCompleteChapter(currentChapter)}
@@ -228,7 +255,8 @@ export function ChapterWorkspace({
                   🎉 Selamat! Skripsi Anda Selesai
                 </h3>
                 <p className="text-white/60 mb-6 max-w-md mx-auto">
-                  Semua bab telah selesai ditulis. Klik tombol di bawah untuk mengunduh skripsi Anda dalam format .docx
+                  Semua bab telah selesai ditulis. Klik tombol di bawah untuk
+                  mengunduh skripsi Anda.
                 </p>
                 <Button
                   onClick={onDownload}
@@ -248,7 +276,9 @@ export function ChapterWorkspace({
         isOpen={showRevisionQuotaModal}
         onClose={() => setShowRevisionQuotaModal(false)}
         onPurchase={handlePurchaseRevisions}
-        chapterName={selectedChapterForTopup ? CHAPTER_LABELS[selectedChapterForTopup] : ''}
+        chapterName={
+          selectedChapterForTopup ? CHAPTER_LABELS[selectedChapterForTopup] : ""
+        }
       />
     </div>
   );
@@ -280,7 +310,11 @@ function ChapterEditor({
   onOpenRevisionPurchase,
 }: ChapterEditorProps) {
   const isRevisionDisabled = chapterData.revisionsRemaining === 0;
-  const canSubmitRevision = revisionFeedback.trim() && !isGenerating && !isSubscriptionExpired && !isRevisionDisabled;
+  const canSubmitRevision =
+    revisionFeedback.trim() &&
+    !isGenerating &&
+    !isSubscriptionExpired &&
+    !isRevisionDisabled;
 
   return (
     <div className="space-y-6">
@@ -295,13 +329,18 @@ function ChapterEditor({
               Klik tombol di bawah untuk mulai menghasilkan konten bab ini
             </p>
             <Button
-              onClick={onStartGeneration}
+              onClick={(e) => {
+                e.preventDefault();
+                onStartGeneration();
+              }}
               disabled={isSubscriptionExpired}
               size="lg"
               className="h-14 px-8 text-lg font-bold rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-xl shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-5 h-5 mr-2" />
-              {isSubscriptionExpired ? 'Berlangganan Habis' : `Mulai ${CHAPTER_LABELS[chapter]}`}
+              {isSubscriptionExpired
+                ? "Berlangganan Habis"
+                : `Mulai ${CHAPTER_LABELS[chapter]}`}
             </Button>
           </div>
         )}
@@ -310,10 +349,10 @@ function ChapterEditor({
           <div className="text-center py-12">
             <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-cyan-400" />
             <p className="text-lg font-semibold text-white mb-2">
-              Menghasilkan konten...
+              Memproses permintaan...
             </p>
             <p className="text-sm text-white/50">
-              AI sedang menulis {CHAPTER_LABELS[chapter]} untuk Anda
+              Sedang menulis {CHAPTER_LABELS[chapter]} untuk Anda
             </p>
           </div>
         )}
@@ -339,11 +378,13 @@ function ChapterEditor({
                     Panel Revisi Mandiri
                   </h4>
                 </div>
-                <div className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  isRevisionDisabled 
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
-                    : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                }`}>
+                <div
+                  className={`text-sm font-medium px-3 py-1 rounded-full ${
+                    isRevisionDisabled
+                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                      : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                  }`}
+                >
                   Sisa kuota revisi: {chapterData.revisionsRemaining}/5
                 </div>
               </div>
@@ -355,7 +396,8 @@ function ChapterEditor({
                       ⚠️ Kuota revisi untuk bagian ini telah habis
                     </p>
                     <p className="text-xs text-white/50">
-                      Anda dapat membeli tambahan kuota revisi untuk melanjutkan revisi pada {CHAPTER_LABELS[chapter]}.
+                      Anda dapat membeli tambahan kuota revisi untuk melanjutkan
+                      revisi pada {CHAPTER_LABELS[chapter]}.
                     </p>
                   </div>
                   <Button
@@ -363,22 +405,21 @@ function ChapterEditor({
                     className="w-full h-11 font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-lg"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    Beli Tambahan Revisi (Rp 99.000)
+                    Beli Tambahan Revisi (Rp 399.000)
                   </Button>
                 </div>
               ) : (
                 <>
                   <p className="text-sm text-white/50 mb-3">
-                    {chapter === 'daftar-pustaka' 
-                      ? 'Masukkan instruksi untuk memperbaiki format atau menambah referensi yang tertinggal. Referensi yang sudah ada di bab sebelumnya akan dipertahankan.'
-                      : 'Masukkan instruksi revisi spesifik. AI akan mempertahankan referensi ilmiah yang sudah digunakan dan menjaga konsistensi dengan bab lainnya.'
-                    }
+                    {chapter === "daftar-pustaka"
+                      ? "Masukkan instruksi untuk memperbaiki format atau menambah referensi yang tertinggal. Referensi yang sudah ada di bab sebelumnya akan dipertahankan."
+                      : "Masukkan instruksi revisi spesifik. AI akan mempertahankan referensi ilmiah yang sudah digunakan dan menjaga konsistensi dengan bab lainnya."}
                   </p>
                   <Textarea
                     placeholder={
-                      chapter === 'daftar-pustaka'
-                        ? 'Contoh: Perbaiki format APA pada referensi nomor 5, 12, dan 18. Tambahkan juga referensi untuk teori X yang disebutkan di Bab 2...'
-                        : 'Contoh: Tolong tambahkan lebih banyak teori tentang... atau Perbaiki bagian metodologi dengan penjelasan lebih detail tentang...'
+                      chapter === "daftar-pustaka"
+                        ? "Contoh: Perbaiki format APA pada referensi nomor 5, 12, dan 18. Tambahkan juga referensi untuk teori X yang disebutkan di Bab 2..."
+                        : "Contoh: Tolong tambahkan lebih banyak teori tentang... atau Perbaiki bagian metodologi dengan penjelasan lebih detail tentang..."
                     }
                     value={revisionFeedback}
                     onChange={(e) => onRevisionFeedbackChange(e.target.value)}
@@ -387,7 +428,10 @@ function ChapterEditor({
                   />
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button
-                      onClick={onRevise}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onRevise();
+                      }}
                       disabled={!canSubmitRevision}
                       className="flex-1 h-11 font-bold rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -406,7 +450,8 @@ function ChapterEditor({
                   </div>
                   {isSubscriptionExpired && (
                     <p className="text-xs text-amber-400 mt-3">
-                      ⚠️ Berlangganan Anda telah habis. Perbarui untuk melakukan revisi.
+                      ⚠️ Berlangganan Anda telah habis. Perbarui untuk melakukan
+                      revisi.
                     </p>
                   )}
                 </>
@@ -415,9 +460,12 @@ function ChapterEditor({
 
             {/* Complete Button */}
             {!chapterData.isComplete && (
-              <div className="pt-2">
+              <div className="pt-2 pb-8">
                 <Button
-                  onClick={onComplete}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onComplete();
+                  }}
                   disabled={isSubscriptionExpired}
                   className="w-full h-12 font-bold rounded-full bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-400 hover:to-cyan-400 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >

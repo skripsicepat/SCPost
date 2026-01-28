@@ -6,7 +6,7 @@
 ✅ File: `supabase/functions/midtrans-proxy/index.ts`
 - Edge function yang aman untuk menyimpan Server Key di server-side
 - Support sandbox dan production mode
-- Proper error handling dan CORS configuration
+- Proper handling untuk errors dan konfigurasi CORS.
 - Sudah di-deploy ke Supabase
 
 **Konfigurasi Required**:

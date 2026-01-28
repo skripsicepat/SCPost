@@ -13,14 +13,16 @@ import {
   Shield,
   Clock,
   Star,
+  LogIn,
 } from "lucide-react";
 import { Footer } from "./footer";
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onLogin?: () => void;
 }
 
-export function LandingPage({ onGetStarted }: LandingPageProps) {
+export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]">
       {/* Sticky Promo Banner */}
@@ -29,12 +31,23 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
         animate={{ y: 0 }}
         className="sticky top-0 z-50 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 py-3 px-4 text-center"
       >
-        <p className="text-white font-semibold text-sm md:text-base">
-          🔥 PROMO KUOTA TERBATAS! Penulisan Skripsi Lengkap hanya{" "}
-          <span className="line-through opacity-80">(Rp 1.200.000)</span>.{" "}
-          <span className="font-bold">Rp 399.000.</span>{" "}
-          <span className="hidden sm:inline">Jangan Sampai Kehabisan!</span>
-        </p>
+        <div className="flex items-center justify-center gap-4">
+          <p className="text-white font-semibold text-sm md:text-base">
+            🔥 PROMO KUOTA TERBATAS! Penulisan Skripsi Lengkap hanya{" "}
+            <span className="line-through opacity-80">(Rp 1.200.000)</span>.{" "}
+            <span className="font-bold">Rp 399.000.</span>{" "}
+            <span className="hidden sm:inline">Jangan Sampai Kehabisan!</span>
+          </p>
+          {onLogin && (
+            <button
+              onClick={onLogin}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              <span className="hidden sm:inline">Login</span>
+            </button>
+          )}
+        </div>
       </motion.div>
 
       {/* Hero Section */}
