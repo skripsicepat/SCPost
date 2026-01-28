@@ -82,7 +82,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
 
             <h1 className="text-lg md:text-xl text-white/70 mb-8 max-w-3xl mx-auto leading-relaxed">
               Dari judul hingga Daftar Pustaka siap dalam hitungan menit. Jangan
-              datang ke dosen dengan tangan kosong!
+              datang ke Dosen dengan tangan kosong!
             </h1>
 
             <motion.div
