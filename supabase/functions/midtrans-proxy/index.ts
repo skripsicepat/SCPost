@@ -58,10 +58,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const isProduction = Deno.env.get('MIDTRANS_IS_PRODUCTION') === 'true';
-    const midtransUrl = isProduction 
-      ? 'https://app.midtrans.com/snap/v1/transactions'
-      : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+    // Always use production
+    const midtransUrl = 'https://app.midtrans.com/snap/v1/transactions';
 
     console.log('Using Midtrans URL:', midtransUrl);
 

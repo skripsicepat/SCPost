@@ -676,15 +676,15 @@ function Home() {
       // Load Midtrans Snap script
       const loadSnapScript = (): Promise<void> => {
         return new Promise((resolve, reject) => {
-          if ((window as any).snap) {
+          // Reuse if already available
+          if (typeof (window as any).snap?.embed === 'function') {
             resolve();
             return;
           }
-          
+
           const existingScript = document.querySelector('script[src*="midtrans.com/snap"]');
           if (existingScript) {
             existingScript.remove();
-            delete (window as any).snap;
           }
 
           const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
@@ -693,25 +693,23 @@ function Home() {
             return;
           }
 
+          // Avoid runtime issues with delete on window globals
+          (window as any).snap = undefined;
+
           const script = document.createElement('script');
-          // Use sandbox URL for sandbox client key (Mid-client-xxx)
-          // Use production URL for production client key (Mid-server-xxx format in prod)
-          const isSandbox = clientKey.startsWith('Mid-client-') || clientKey.includes('sandbox');
-          script.src = isSandbox 
-            ? 'https://app.sandbox.midtrans.com/snap/snap.js'
-            : 'https://app.midtrans.com/snap/snap.js';
+          // Always use production
+          script.src = 'https://app.midtrans.com/snap/snap.js';
           script.async = true;
           script.setAttribute('data-client-key', clientKey);
           script.onload = () => {
-            // Wait for snap to initialize
             const start = Date.now();
             const tick = () => {
-              if ((window as any).snap) {
+              if (typeof (window as any).snap?.embed === 'function') {
                 resolve();
                 return;
               }
               if (Date.now() - start > 5000) {
-                reject(new Error('Midtrans Snap loaded but window.snap is still undefined'));
+                reject(new Error('Midtrans Snap loaded but window.snap.embed is still undefined'));
                 return;
               }
               setTimeout(tick, 50);
