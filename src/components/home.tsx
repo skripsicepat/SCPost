@@ -432,13 +432,67 @@ function Home() {
     }
   }, [appState]);
 
-  // Check for existing session (but stay on landing page)
+  // Check for existing session AND handle payment callback
   useEffect(() => {
     const checkExistingSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
         setUserId(session.user.id);
+        
+        // Check for payment callback parameter
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('payment') === 'success') {
+          // Remove the parameter from URL
+          window.history.replaceState({}, '', window.location.pathname);
+          
+          // Fetch latest subscription status from database
+          try {
+            const subscription = await subscriptionService.getActiveSubscription(session.user.id);
+            
+            if (subscription && subscription.status === 'active') {
+              // Get thesis data
+              const thesis = await thesisService.getUserThesis(session.user.id);
+              
+              if (thesis) {
+                setThesisId(thesis.id);
+                
+                // Restore app state with payment success
+                setAppState({
+                  step: 'chapter-writing',
+                  leadData: {
+                    fakultas: thesis.fakultas,
+                    jurusan: thesis.jurusan,
+                    peminatan: thesis.peminatan,
+                    email: session.user.email || '',
+                  },
+                  titleIdeas: [],
+                  selectedTitle: thesis.title,
+                  paymentStatus: 'paid',
+                  isGenerating: false,
+                });
+                
+                toast.success('🎉 Pembayaran berhasil!', {
+                  description: 'Selamat datang kembali! Anda dapat melanjutkan penulisan thesis.',
+                  duration: 5000,
+                });
+                
+                return;
+              }
+            }
+            
+            // Payment parameter exists but no active subscription
+            toast.error('Pembayaran belum terverifikasi', {
+              description: 'Mohon tunggu beberapa saat, atau hubungi support jika masalah berlanjut.',
+            });
+          } catch (error) {
+            console.error('Failed to fetch subscription after payment:', error);
+            toast.error('Gagal memuat data subscription', {
+              description: 'Silakan refresh halaman atau hubungi support.',
+            });
+          }
+        }
+        
         // User session exists but we stay on landing page
         // They can click "Login" to proceed to their thesis
       }

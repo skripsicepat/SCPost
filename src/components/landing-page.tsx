@@ -105,7 +105,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             <div className="flex flex-wrap justify-center gap-6 mt-10 text-white/60">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
-                <span className="text-sm">500+ Mahasiswa Terbantu</span>
+                <span className="text-sm">50.000+ Mahasiswa Terbantu</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-blue-400" />
@@ -340,7 +340,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
                 Mulai Sekarang — Gratis!
               </Button>
               <p className="text-white/70 text-sm mt-4">
-                Sudah digunakan oleh 500+ mahasiswa di seluruh Indonesia
+                Sudah digunakan oleh 50.000+ mahasiswa di seluruh Indonesia
               </p>
             </div>
           </motion.div>

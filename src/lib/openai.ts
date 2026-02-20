@@ -21,19 +21,64 @@ async function callOpenAI(messages: OpenAIMessage[], maxTokens: number = 2000): 
     max_tokens: maxTokens,
   };
 
-  const { data, error } = await supabase.functions.invoke('supabase-functions-openai-proxy', {
-    body: requestBody,
+  // Verify environment variables
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('❌ Missing Supabase credentials', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseKey
+    });
+    throw new Error('Konfigurasi aplikasi tidak lengkap. Silakan hubungi administrator.');
+  }
+
+  console.log('✅ Calling OpenAI proxy...', { 
+    model: requestBody.model,
+    messageCount: messages.length,
+    supabaseConfigured: true
   });
+  
+  try {
+    const { data, error } = await supabase.functions.invoke('supabase-functions-openai-proxy', {
+      body: requestBody,
+    });
 
-  if (error) {
-    throw new Error(error.message || 'Gagal menghubungi server AI');
+    console.log('📥 OpenAI proxy response:', { 
+      hasData: !!data, 
+      hasError: !!error,
+      errorDetails: error 
+    });
+
+    if (error) {
+      console.error('❌ Supabase function invocation error:', error);
+      throw new Error(error.message || 'Gagal menghubungi server AI');
+    }
+
+    if (!data) {
+      console.error('❌ No data received from edge function');
+      throw new Error('Tidak ada respons dari server AI');
+    }
+
+    if (data.error) {
+      console.error('❌ OpenAI API error:', data.error);
+      throw new Error(data.error);
+    }
+
+    if (!data.choices || !data.choices[0]?.message?.content) {
+      console.error('❌ Invalid OpenAI response structure:', data);
+      throw new Error('Respons AI tidak valid');
+    }
+
+    console.log('✅ OpenAI response received successfully');
+    return data.choices[0].message.content;
+  } catch (err) {
+    console.error('❌ callOpenAI caught error:', err);
+    if (err instanceof Error) {
+      throw err;
+    }
+    throw new Error('Terjadi kesalahan saat menghubungi server AI');
   }
-
-  if (data.error) {
-    throw new Error(data.error);
-  }
-
-  return data.choices[0]?.message?.content || '';
 }
 
 export async function generateTitleIdeas(data: LeadFormData): Promise<Array<{ id: string; title: string }>> {

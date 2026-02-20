@@ -175,7 +175,7 @@ export function LeadCaptureForm({
                 ) : (
                   <span className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />
-                    Dapatkan 10 Ide Judul Sekarang (Gratis!)
+                    10 Ide Judul (Gratis!)
                   </span>
                 )}
               </Button>
@@ -185,7 +185,7 @@ export function LeadCaptureForm({
               <div className="flex items-center justify-center gap-2 text-white/40 text-xs">
                 <TrendingUp className="w-4 h-4" />
                 <span>
-                  AI kami menganalisis 1000+ jurnal ilmiah terbaru untuk jurusan
+                  Kami menganalisis 1000+ jurnal ilmiah terbaru untuk jurusan
                   Anda
                 </span>
               </div>
