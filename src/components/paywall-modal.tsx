@@ -75,7 +75,7 @@ export function PaywallModal({
                   Rp 1.200.000
                 </div>
                 <div className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent my-2">
-                  Rp 399.000
+                  Rp 299.000
                 </div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-pink-500/20 rounded-full border border-orange-500/30">
                   <span className="text-sm font-semibold text-orange-400">

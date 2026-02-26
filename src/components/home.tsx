@@ -592,7 +592,7 @@ function Home() {
       // Generate unique order ID
       const orderId = `SKRIPSI-${Date.now()}-${currentUserId.substring(0, 8)}`;
       const email = appState.leadData.email;
-      const amount = 399000;
+      const amount = 299000;
 
       // Create transaction with Midtrans
       let snapToken: string | null = null;

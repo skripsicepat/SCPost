@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   payment_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   expiry_date TIMESTAMPTZ NOT NULL,
-  amount NUMERIC NOT NULL DEFAULT 399000,
+  amount NUMERIC NOT NULL DEFAULT 299000,
   status TEXT NOT NULL DEFAULT 'active',
   payment_method TEXT,
   transaction_id TEXT,

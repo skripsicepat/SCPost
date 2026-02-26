@@ -35,7 +35,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
           <p className="text-white font-semibold text-sm md:text-base">
             🔥 PROMO KUOTA TERBATAS! Penulisan Skripsi Lengkap hanya{" "}
             <span className="line-through opacity-80">(Rp 1.200.000)</span>.{" "}
-            <span className="font-bold">Rp 399.000.</span>{" "}
+            <span className="font-bold">Rp 299.000.</span>{" "}
             <span className="hidden sm:inline">Jangan Sampai Kehabisan!</span>
           </p>
           {onLogin && (
@@ -81,7 +81,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             </h1>
 
             <h1 className="text-lg md:text-xl text-white/70 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Dari judul hingga Daftar Pustaka siap dalam hitungan menit. Jangan
+              Dari judul hingga Daftar Pustaka siap dalam waktu singkat. Jangan
               datang ke Dosen dengan tangan kosong!
             </h1>
 
@@ -105,7 +105,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             <div className="flex flex-wrap justify-center gap-6 mt-10 text-white/60">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
-                <span className="text-sm">50.000+ Mahasiswa Terbantu</span>
+                <span className="text-sm">500.000+ Mahasiswa Terbantu</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-blue-400" />
@@ -340,7 +340,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
                 Mulai Sekarang — Gratis!
               </Button>
               <p className="text-white/70 text-sm mt-4">
-                Sudah digunakan oleh 50.000+ mahasiswa di seluruh Indonesia
+                Sudah digunakan oleh 500.000+ mahasiswa di seluruh Indonesia
               </p>
             </div>
           </motion.div>

@@ -226,7 +226,7 @@ export function TitleSelection({
                 </p>
                 <div className="mt-2">
                   <span className="text-2xl font-bold text-white">
-                    Rp 399.000
+                    Rp 299.000
                   </span>
                   <span className="text-white/50 line-through ml-2">
                     Rp 1.200.000
