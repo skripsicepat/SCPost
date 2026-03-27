@@ -81,8 +81,12 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             </h1>
 
             <h1 className="text-lg md:text-xl text-white/70 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Dari judul hingga Daftar Pustaka siap dalam waktu singkat. Jangan
-              datang ke Dosen dengan tangan kosong!
+              Gunakan metode skripsicepat.com! Selesaikan terlebih dahulu
+              penulisan skripsi dari judul, Bab I-V, hingga daftar pustaka
+              dengan mudah memanfaatkan bantuan skripsicepat.com. Konsultasikan
+              tiap bagian skripsi ke dosen pembimbing. Sempurnakan penulisan
+              skripsi dengan menggunakan fasilitas revisi di skripsicepat.com.
+              Skripsi selesai, siap wisuda!
             </h1>
 
             <motion.div
