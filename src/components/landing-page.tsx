@@ -16,6 +16,7 @@ import {
   LogIn,
 } from "lucide-react";
 import { Footer } from "./footer";
+import { SkripsiCalculator } from "./skripsi-calculator";
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -49,6 +50,9 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
           )}
         </div>
       </motion.div>
+
+      {/* Kalkulator Skripsi - Above the Fold */}
+      <SkripsiCalculator />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden px-4 py-16 md:py-24 lg:py-32">
