@@ -36,7 +36,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
           <p className="text-white font-semibold text-sm md:text-base">
             🔥 PROMO KUOTA TERBATAS! Penulisan Skripsi Lengkap hanya{" "}
             <span className="line-through opacity-80">(Rp 1.200.000)</span>.{" "}
-            <span className="font-bold">Rp 299.000.</span>{" "}
+            <span className="font-bold">Rp 199.000.</span>{" "}
             <span className="hidden sm:inline">Jangan Sampai Kehabisan!</span>
           </p>
           {onLogin && (

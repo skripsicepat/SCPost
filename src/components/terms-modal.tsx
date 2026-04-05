@@ -70,7 +70,7 @@ export function TermsModal({ isOpen, onClose }: TermsModalProps) {
                       Setelah 30 hari, akses ke fitur penulisan dan revisi akan terkunci otomatis
                     </li>
                     <li>
-                      Perpanjangan akses setelah 30 hari memerlukan pembayaran ulang sebesar Rp 299.000
+                      Perpanjangan akses setelah 30 hari memerlukan pembayaran ulang sebesar Rp 199.000
                     </li>
                     <li>
                       Anda akan menerima email pengingat 3 hari sebelum masa aktif berakhir

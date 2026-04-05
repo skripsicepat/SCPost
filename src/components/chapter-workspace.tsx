@@ -405,7 +405,7 @@ function ChapterEditor({
                     className="w-full h-11 font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-lg"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    Beli Tambahan Revisi (Rp 299.000)
+                    Beli Tambahan Revisi (Rp 199.000)
                   </Button>
                 </div>
               ) : (

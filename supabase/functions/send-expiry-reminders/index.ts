@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
 
               <p>Setelah masa berlaku habis, Anda tidak akan dapat mengakses fitur penulisan dan revisi skripsi. Untuk tetap menggunakan layanan kami, silakan lakukan perpanjangan berlangganan.</p>
 
-              <p><strong>Harga Perpanjangan:</strong> Rp 299.000 untuk 30 hari akses penuh</p>
+              <p><strong>Harga Perpanjangan:</strong> Rp 199.000 untuk 30 hari akses penuh</p>
 
               <a href="${supabaseUrl.replace('//', '//app.')}/perpanjang" class="cta-button">Perpanjang Sekarang</a>
 

@@ -117,7 +117,7 @@ export const subscriptionService: SubscriptionService = {
   },
 
   async renewSubscription(userId: string, transactionId: string): Promise<Subscription> {
-    return subscriptionService.createSubscription(userId, transactionId, 299000);
+    return subscriptionService.createSubscription(userId, transactionId, 199000);
   },
 
   async isSubscriptionActive(userId: string): Promise<boolean> {
