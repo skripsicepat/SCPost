@@ -34,7 +34,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
       >
         <div className="flex items-center justify-center gap-4">
           <p className="text-white font-semibold text-sm md:text-base">
-            🔥 PROMO KUOTA TERBATAS! Penulisan Skripsi Lengkap hanya{" "}
+            🔥 PROMO KUOTA TERBATAS! Untuk Penulisan Skripsi Lengkap hanya{" "}
             <span className="line-through opacity-80">(Rp 1.200.000)</span>.{" "}
             <span className="font-bold">Rp 199.000.</span>{" "}
             <span className="hidden sm:inline">Jangan Sampai Kehabisan!</span>
@@ -72,7 +72,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
               <Sparkles className="w-4 h-4 text-yellow-400" />
               <span className="text-sm font-medium text-white/90">
-                Academic Writing Assistant
+                Bantuan Penulisan Akademik
               </span>
             </div>
 
@@ -90,7 +90,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
               dengan mudah memanfaatkan bantuan skripsicepat.com. Konsultasikan
               tiap bagian skripsi ke dosen pembimbing. Sempurnakan penulisan
               skripsi dengan menggunakan fasilitas revisi di skripsicepat.com.
-              Skripsi selesai, siap wisuda!
+              Skripsi selesai, wisuda siap digapai!
             </h1>
 
             <motion.div
@@ -104,7 +104,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
                 className="h-14 px-8 text-lg font-bold rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-2xl shadow-purple-500/30 active:scale-[0.98] transition-all"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Coba Ide Judul Gratis
+                Ide Judul Gratis
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
