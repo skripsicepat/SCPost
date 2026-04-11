@@ -285,36 +285,80 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
 
       {/* Social Proof */}
       <section className="px-4 py-16 md:py-20 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
+        <div className="max-w-5xl mx-auto">
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="text-center text-2xl md:text-3xl font-bold text-white mb-10"
           >
-            <div className="flex justify-center gap-1 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className="w-8 h-8 fill-yellow-400 text-yellow-400"
-                />
-              ))}
-            </div>
-            <p className="text-white/80 text-lg md:text-xl italic mb-6 max-w-2xl mx-auto">
-              "SkripsiCepat sangat membantu saya yang dikejar deadline. Hasil
-              tulisannya terstruktur dan mudah dipahami dosen pembimbing!"
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-purple-400 flex items-center justify-center text-white font-bold">
-                A
-              </div>
-              <div className="text-left">
-                <p className="text-white font-semibold">Andi Pratama</p>
-                <p className="text-white/50 text-sm">
-                  Mahasiswa Teknik Informatika
+            Kata Mereka Tentang SkripsiCepat
+          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                initial: "A",
+                gradient: "from-cyan-400 to-purple-400",
+                quote:
+                  "SkripsiCepat sangat membantu saya yang dikejar deadline. Hasil tulisannya terstruktur dan mudah dipahami dosen pembimbing!",
+                name: "Andi Pratama",
+                major: "Mahasiswa Teknik Informatika",
+                delay: 0,
+              },
+              {
+                initial: "S",
+                gradient: "from-emerald-400 to-teal-400",
+                quote:
+                  "Awalnya saya ragu, tapi setelah coba ternyata hasilnya luar biasa! Bab 1 dan Bab 2 selesai dalam sehari. Dosen saya bilang kerangkanya sangat sistematis.",
+                name: "Sari Rahayu",
+                major: "Mahasiswi Manajemen Bisnis",
+                delay: 0.1,
+              },
+              {
+                initial: "R",
+                gradient: "from-pink-400 to-orange-400",
+                quote:
+                  "Fitur revisi per bab sangat berguna. Saya bisa minta perbaikan sampai hasilnya benar-benar sesuai dengan arahan dosen. Hemat waktu dan tenaga!",
+                name: "Rizky Firmansyah",
+                major: "Mahasiswa Akuntansi",
+                delay: 0.2,
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: item.delay }}
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 flex flex-col gap-4"
+              >
+                <div className="flex justify-start gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </div>
+                <p className="text-white/80 text-sm md:text-base italic flex-1">
+                  "{item.quote}"
                 </p>
-              </div>
-            </div>
-          </motion.div>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white font-bold text-sm`}
+                  >
+                    {item.initial}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-white font-semibold text-sm">
+                      {item.name}
+                    </p>
+                    <p className="text-white/50 text-xs">{item.major}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -345,7 +389,7 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
                 className="h-14 px-10 text-lg font-bold rounded-full bg-white text-purple-600 hover:bg-white/90 shadow-2xl active:scale-[0.98] transition-all"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Mulai Sekarang — Gratis!
+                Mulai Sekarang!
               </Button>
               <p className="text-white/70 text-sm mt-4">
                 Sudah digunakan oleh 500.000+ mahasiswa di seluruh Indonesia
