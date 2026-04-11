@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calculator, Clock, Mail, ChevronDown, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Calculator,
+  Clock,
+  Mail,
+  ChevronDown,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 
 type ProgressLevel = "" | "belum-mulai" | "bab-1" | "bab-2" | "bab-3" | "bab-4";
 
@@ -33,7 +41,7 @@ const sisaHariMap: Record<string, number> = {
 function calculateResult(
   progress: ProgressLevel,
   jamPerHari: number,
-  targetBulan: number
+  targetBulan: number,
 ): CalculatorResult {
   const sisaHari = sisaHariMap[progress] || 150;
   // estimasiHari = sisaHari * 3 / jamPerHari  (basis 3 jam/hari)
@@ -49,20 +57,30 @@ function calculateResult(
     status = "aman";
     statusLabel = "Aman";
     statusEmoji = "✅";
-    pesan = "Kamu masih on track! Tapi jangan sampai lengah. Konsistensi adalah kunci keberhasilan skripsi.";
+    pesan =
+      "Kamu masih on track! Tapi jangan sampai lengah. Konsistensi adalah kunci keberhasilan skripsi.";
   } else if (estimasiBulan <= targetBulan + 1) {
     status = "rawan";
     statusLabel = "Rawan Telat";
     statusEmoji = "⚠️";
-    pesan = "Waktumu sangat tipis! Banyak mahasiswa gagal di titik ini karena kurang strategi. Kamu butuh percepatan sekarang.";
+    pesan =
+      "Waktumu sangat tipis! Banyak mahasiswa gagal di titik ini karena kurang strategi. Kamu butuh percepatan sekarang.";
   } else {
     status = "telat";
     statusLabel = "Hampir Pasti Telat";
     statusEmoji = "🚨";
-    pesan = "Kalau cara pengerjaan tidak berubah, wisuda bisa tertunda. Kamu butuh bantuan sekarang juga!";
+    pesan =
+      "Kalau cara pengerjaan tidak berubah, wisuda bisa tertunda. Kamu butuh bantuan sekarang juga!";
   }
 
-  return { estimasiHari, estimasiBulan, status, statusLabel, statusEmoji, pesan };
+  return {
+    estimasiHari,
+    estimasiBulan,
+    status,
+    statusLabel,
+    statusEmoji,
+    pesan,
+  };
 }
 
 export function SkripsiCalculator() {
@@ -75,15 +93,21 @@ export function SkripsiCalculator() {
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!progress) newErrors.progress = "Pilih progress skripsi";
-    if (!jamPerHari || Number(jamPerHari) <= 0) newErrors.jamPerHari = "Masukkan jam per hari";
-    if (!targetBulan || Number(targetBulan) <= 0) newErrors.targetBulan = "Masukkan target bulan";
+    if (!jamPerHari || Number(jamPerHari) <= 0)
+      newErrors.jamPerHari = "Masukkan jam per hari";
+    if (!targetBulan || Number(targetBulan) <= 0)
+      newErrors.targetBulan = "Masukkan target bulan";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleCalculate = () => {
     if (!validate()) return;
-    const res = calculateResult(progress, Number(jamPerHari), Number(targetBulan));
+    const res = calculateResult(
+      progress,
+      Number(jamPerHari),
+      Number(targetBulan),
+    );
     setResult(res);
   };
 
@@ -129,7 +153,7 @@ export function SkripsiCalculator() {
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/15 border border-green-500/30 rounded-full mb-4">
                 <Calculator className="w-4 h-4 text-green-400" />
                 <span className="text-xs font-semibold text-green-400 uppercase tracking-wider">
-                  Gratis & hanya 30 detik
+                  Cek Gratis
                 </span>
               </div>
 
@@ -197,13 +221,17 @@ export function SkripsiCalculator() {
                       }}
                       placeholder="contoh: 3"
                       className={`w-full bg-white/[0.06] border ${
-                        errors.jamPerHari ? "border-red-500/60" : "border-white/15"
+                        errors.jamPerHari
+                          ? "border-red-500/60"
+                          : "border-white/15"
                       } rounded-xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30 transition-all`}
                     />
                     <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
                   </div>
                   {errors.jamPerHari && (
-                    <p className="text-red-400 text-xs mt-1">{errors.jamPerHari}</p>
+                    <p className="text-red-400 text-xs mt-1">
+                      {errors.jamPerHari}
+                    </p>
                   )}
                 </div>
 
@@ -222,11 +250,15 @@ export function SkripsiCalculator() {
                     }}
                     placeholder="contoh: 6"
                     className={`w-full bg-white/[0.06] border ${
-                      errors.targetBulan ? "border-red-500/60" : "border-white/15"
+                      errors.targetBulan
+                        ? "border-red-500/60"
+                        : "border-white/15"
                     } rounded-xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30 transition-all`}
                   />
                   {errors.targetBulan && (
-                    <p className="text-red-400 text-xs mt-1">{errors.targetBulan}</p>
+                    <p className="text-red-400 text-xs mt-1">
+                      {errors.targetBulan}
+                    </p>
                   )}
                 </div>
               </div>
@@ -256,10 +288,14 @@ export function SkripsiCalculator() {
                     <div className="flex items-center gap-3 mb-4">
                       {statusColors[result.status].icon}
                       <div>
-                        <p className={`text-xl font-bold ${statusColors[result.status].text}`}>
+                        <p
+                          className={`text-xl font-bold ${statusColors[result.status].text}`}
+                        >
                           {result.statusEmoji} {result.statusLabel}
                         </p>
-                        <p className="text-white/50 text-sm">Hasil analisis skripsimu</p>
+                        <p className="text-white/50 text-sm">
+                          Hasil analisis skripsimu
+                        </p>
                       </div>
                     </div>
 
@@ -269,13 +305,17 @@ export function SkripsiCalculator() {
                         <p className="text-2xl font-bold text-white">
                           {result.estimasiBulan.toFixed(1)}
                         </p>
-                        <p className="text-white/50 text-xs mt-0.5">Estimasi Bulan</p>
+                        <p className="text-white/50 text-xs mt-0.5">
+                          Estimasi Bulan
+                        </p>
                       </div>
                       <div className="bg-white/[0.05] rounded-xl p-3 text-center">
                         <p className="text-2xl font-bold text-white">
                           {Math.round(result.estimasiHari)}
                         </p>
-                        <p className="text-white/50 text-xs mt-0.5">Estimasi Hari</p>
+                        <p className="text-white/50 text-xs mt-0.5">
+                          Estimasi Hari
+                        </p>
                       </div>
                     </div>
 
@@ -293,7 +333,8 @@ export function SkripsiCalculator() {
                       🚀 Konsultasi Gratis via Email
                     </a>
                     <p className="text-center text-white/40 text-xs mt-2">
-                      Banyak mahasiswa terlambat karena kurang strategi. Jangan jadi salah satunya.
+                      Banyak mahasiswa terlambat karena kurang strategi. Jangan
+                      jadi salah satunya.
                     </p>
                   </motion.div>
                 )}
