@@ -29,7 +29,7 @@ function App() {
   }
 
   return (
-    <div style={{ backgroundColor: '#F9F6F1', color: '#2C2416' }} className="min-h-screen">
+    <div id="app-scroll-root" style={{ backgroundColor: '#F9F6F1', color: '#2C2416' }} className="min-h-screen">
       <Toaster position="top-center" richColors />
       <Suspense fallback={<div style={{ padding: '40px', fontFamily: 'sans-serif' }}>Loading application...</div>}>
         <Routes>

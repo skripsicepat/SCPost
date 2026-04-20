@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LandingPage } from './landing-page';
 import { LeadCaptureForm } from './lead-capture-form';
 import { TitleSelection } from './title-selection';
@@ -414,6 +414,7 @@ function Home() {
     };
   };
 
+  const topRef = useRef<HTMLDivElement>(null);
   const [appState, setAppState] = useState<AppState>(loadInitialState);
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -500,6 +501,29 @@ function Home() {
 
     checkExistingSession();
   }, []);
+
+  // Scroll to top whenever step changes
+  useEffect(() => {
+    // scrollIntoView on the anchor ref
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
+    }
+    // Try every possible scroll target
+    const targets = [
+      document.getElementById('app-scroll-root'),
+      document.documentElement,
+      document.body,
+    ];
+    targets.forEach((el) => {
+      if (el) {
+        el.scrollTop = 0;
+        el.scrollLeft = 0;
+      }
+    });
+    try {
+      window.scrollTo(0, 0);
+    } catch (_) {}
+  }, [appState.step]);
 
   const handleLeadFormSubmit = async (data: LeadFormData) => {
     setAppState((prev) => ({ ...prev, isGenerating: true, leadData: data }));
@@ -1226,6 +1250,7 @@ function Home() {
 
   return (
     <>
+      <div ref={topRef} style={{ position: 'absolute', top: 0, left: 0, height: 0, width: 0 }} aria-hidden="true" />
       {appState.step === 'landing' && (
         <LandingPage onGetStarted={handleGetStarted} onLogin={handleOpenLogin} />
       )}
